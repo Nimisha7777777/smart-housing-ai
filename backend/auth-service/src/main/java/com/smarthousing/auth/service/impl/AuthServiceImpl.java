@@ -2,6 +2,10 @@ package com.smarthousing.auth.service.impl;
 
 import com.smarthousing.auth.dto.request.RegisterSocietyRequest;
 import com.smarthousing.auth.dto.response.RegisterSocietyResponse;
+import com.smarthousing.auth.entity.Society;
+import com.smarthousing.auth.entity.User;
+import com.smarthousing.auth.enums.AccountStatus;
+import com.smarthousing.auth.enums.Role;
 import com.smarthousing.auth.exception.DuplicateResourceException;
 import com.smarthousing.auth.repository.SocietyRepository;
 import com.smarthousing.auth.repository.UserRepository;
@@ -50,8 +54,60 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public RegisterSocietyResponse registerSociety(RegisterSocietyRequest request) {
+
         validateRegistration(request);
 
-        return null;
+        Society society = createSociety(request);
+
+        User admin = createAdminUser(request, society);
+
+        return new RegisterSocietyResponse(
+
+                society.getId(),
+
+                admin.getId(),
+
+                "Society registered successfully."
+
+        );
+    }
+
+    private Society createSociety(RegisterSocietyRequest request) {
+
+        Society society = new Society();
+
+        society.setSocietyName(request.getSocietyName());
+        society.setAddress(request.getAddress());
+        society.setCity(request.getCity());
+        society.setState(request.getState());
+        society.setPincode(request.getPincode());
+        society.setEmail(request.getSocietyEmail());
+        society.setPhone(request.getSocietyPhone());
+
+        return societyRepository.save(society);
+    }
+
+    private User createAdminUser(RegisterSocietyRequest request,
+                                 Society society) {
+
+        User admin = new User();
+
+        admin.setFirstName(request.getAdminFirstName());
+        admin.setLastName(request.getAdminLastName());
+        admin.setEmail(request.getAdminEmail());
+
+        admin.setPhone(request.getAdminPhone());
+
+        admin.setPassword(
+                passwordEncoder.encode(request.getPassword())
+        );
+
+        admin.setRole(Role.ADMIN);
+
+        admin.setAccountStatus(AccountStatus.ACTIVE);
+
+        admin.setSociety(society);
+
+        return userRepository.save(admin);
     }
 }
