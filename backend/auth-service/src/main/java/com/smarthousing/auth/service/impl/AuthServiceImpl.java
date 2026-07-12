@@ -2,6 +2,7 @@ package com.smarthousing.auth.service.impl;
 
 import com.smarthousing.auth.dto.request.RegisterSocietyRequest;
 import com.smarthousing.auth.dto.response.RegisterSocietyResponse;
+import com.smarthousing.auth.exception.DuplicateResourceException;
 import com.smarthousing.auth.repository.SocietyRepository;
 import com.smarthousing.auth.repository.UserRepository;
 import com.smarthousing.auth.service.AuthService;
@@ -28,9 +29,29 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
+    private void validateRegistration(RegisterSocietyRequest request) {
+
+        if (societyRepository.existsByEmail(request.getSocietyEmail())) {
+            throw new DuplicateResourceException("Society email already exists.");
+        }
+
+        if (societyRepository.existsByPhone(request.getSocietyPhone())) {
+            throw new DuplicateResourceException("Society phone already exists.");
+        }
+
+        if (userRepository.existsByEmail(request.getAdminEmail())) {
+            throw new DuplicateResourceException("Admin email already exists.");
+        }
+
+        if (userRepository.existsByPhone(request.getAdminPhone())) {
+            throw new DuplicateResourceException("Admin phone already exists.");
+        }
+    }
     @Override
     @Transactional
     public RegisterSocietyResponse registerSociety(RegisterSocietyRequest request) {
+        validateRegistration(request);
+
         return null;
     }
 }
