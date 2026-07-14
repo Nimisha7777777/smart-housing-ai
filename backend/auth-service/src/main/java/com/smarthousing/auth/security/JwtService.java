@@ -7,6 +7,8 @@ import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 
 @Service
 public class JwtService {
@@ -44,6 +46,45 @@ public class JwtService {
                 )
                 .signWith(getSigningKey())
                 .compact();
+    }
 
+    private Claims extractAllClaims(String token) {
+
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public Long extractUserId(String token) {
+
+        return Long.parseLong(
+                extractAllClaims(token)
+                        .getSubject()
+        );
+    }
+
+    public String extractRole(String token) {
+
+        return extractAllClaims(token)
+                .get("role", String.class);
+    }
+
+    public Long extractSocietyId(String token) {
+
+        return extractAllClaims(token)
+                .get("societyId", Long.class);
+    }
+
+    private boolean isTokenExpired(String token) {
+
+        return extractAllClaims(token)
+                .getExpiration()
+                .before(new Date());
+    }
+
+    public boolean isTokenValid(String token) {
+        return !isTokenExpired(token);
     }
 }

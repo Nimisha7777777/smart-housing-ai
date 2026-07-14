@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthServiceImpl implements AuthService {
-
+    
     private final UserRepository userRepository;
     private final SocietyRepository societyRepository;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -119,4 +119,5 @@ public class AuthServiceImpl implements AuthService {
         return null;
 
     }
+
 }
