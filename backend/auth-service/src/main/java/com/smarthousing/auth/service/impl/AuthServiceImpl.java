@@ -1,6 +1,8 @@
 package com.smarthousing.auth.service.impl;
 
+import com.smarthousing.auth.dto.request.LoginRequest;
 import com.smarthousing.auth.dto.request.RegisterSocietyRequest;
+import com.smarthousing.auth.dto.response.LoginResponse;
 import com.smarthousing.auth.dto.response.RegisterSocietyResponse;
 import com.smarthousing.auth.entity.Society;
 import com.smarthousing.auth.entity.User;
@@ -109,5 +111,12 @@ public class AuthServiceImpl implements AuthService {
         admin.setSociety(society);
 
         return userRepository.save(admin);
+    }
+
+    @Override
+    public LoginResponse login(LoginRequest request) {
+
+        return null;
+
     }
 }
